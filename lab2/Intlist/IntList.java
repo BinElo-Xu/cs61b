@@ -105,16 +105,17 @@ public class IntList {
         //TODO:  fill in method
         if (A != null) {
             IntList pa = A;
-            IntList pb = B;
-            if (pb == null) {
+            if (B == null) {
                 return A;
             }
             IntList ans = new IntList(pa.first, null);
+            IntList p = ans;
             while (pa.rest != null) {
                 pa = pa.rest;
-                ans = new IntList(pa.first, ans);
+                p.rest = new IntList(pa.first, ans);
+                p = p.rest;
             }
-            ans = new IntList(pb.first, pb);
+            p.rest = B;
             return ans;
         }
         return B;

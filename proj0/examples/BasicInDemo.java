@@ -1,3 +1,6 @@
+
+import edu.princeton.cs.introcs.In;
+
 /** Simpler demo of the In class. */
 public class BasicInDemo {
 	public static void main(String[] args) {

@@ -41,19 +41,23 @@ public class ArrayDeque<T> {
         nextLast = (nextLast + 1) % items.length;
         size += 1;
     }
-    public void removeFirst() {
+    public T removeFirst() {
         nextFirst = (nextFirst + 1) % items.length;
         size -= 1;
+        T tmp = items[nextFirst];
         if (size <= items.length / (addSize * addSize)) {
             items = resize(items.length / addSize);
         }
+        return tmp;
     }
-    public void removeLast() {
+    public T removeLast() {
         nextLast = (nextLast - 1 + items.length) % items.length;
         size -= 1;
+        T tmp = items[nextLast];
         if (size <= items.length / (addSize * addSize)) {
             items = resize(items.length / addSize);
         }
+        return tmp;
     }
     public boolean isEmpty() {
         return size == 0;

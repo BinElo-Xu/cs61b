@@ -21,7 +21,7 @@ public class ArrayDeque<T> {
             j += 1;
             num -= 1;
         }
-        nextFirst = newSize / (addSize * addSize) - 1;
+        nextFirst = ((newSize / (addSize * addSize) - 1) + res.length) % res.length;
         nextLast = j;
         return res;
     }
@@ -42,19 +42,25 @@ public class ArrayDeque<T> {
         size += 1;
     }
     public T removeFirst() {
+        if (size == 0) {
+            return null;
+        }
         nextFirst = (nextFirst + 1) % items.length;
         size -= 1;
         T tmp = items[nextFirst];
-        if (size <= items.length / (addSize * addSize)) {
+        if (size <= items.length / (addSize * addSize) && items.length > 1) {
             items = resize(items.length / addSize);
         }
         return tmp;
     }
     public T removeLast() {
+        if (size == 0) {
+            return null;
+        }
         nextLast = (nextLast - 1 + items.length) % items.length;
         size -= 1;
         T tmp = items[nextLast];
-        if (size <= items.length / (addSize * addSize)) {
+        if (size <= items.length / (addSize * addSize) && items.length > 1) {
             items = resize(items.length / addSize);
         }
         return tmp;
@@ -76,20 +82,5 @@ public class ArrayDeque<T> {
             num -= 1;
             i += 1;
         }
-    }
-
-    public static void main(String[] args) {
-        ArrayDeque d = new ArrayDeque();
-        d.addLast(0);
-        d.addLast(1);
-        d.addFirst(2);
-        d.addFirst(3);
-        d.addFirst(4);
-        d.size();
-        d.size();
-        d.addFirst(7);
-        d.addLast(8);
-        d.addFirst(9);
-        d.addFirst(10);
     }
 }

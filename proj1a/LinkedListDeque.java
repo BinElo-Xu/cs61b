@@ -40,25 +40,29 @@ public class LinkedListDeque<T> {
           p.next.prev = p;
           p.next.next = sentinel;
       }
-      public void removeFirst() {
+      public T removeFirst() {
           size -= 1;
           Node p = sentinel;
           Node p1 = p.next;
+          T tmp = p1.item;
           p.next = p1.next;
           p1.next.prev = p;
 
           p1.next = null;
           p.prev = null;
+          return tmp;
       }
-      public void removeLast() {
+      public T removeLast() {
           size -= 1;
           Node p = sentinel;
           Node p1 = sentinel.prev;
+          T tmp = p1.item;
           p.prev = p.prev.prev;
           p.prev.next = sentinel;
 
           p1.next = null;
           p1.prev = null;
+          return tmp;
       }
       public T get(int index) {
           Node p = sentinel.next;

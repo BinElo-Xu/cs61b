@@ -12,7 +12,7 @@ public class ArrayDeque<T> {
     }
     private T[] resize(int newSize) {
         T[] res = (T[]) new Object[newSize];
-        int i = nextFirst + 1;
+        int i = (nextFirst + 1) % items.length;
         int num = size;
         int j = newSize / (addSize * addSize);
         while (num > 0) {
@@ -76,5 +76,20 @@ public class ArrayDeque<T> {
             num -= 1;
             i += 1;
         }
+    }
+
+    public static void main(String[] args) {
+        ArrayDeque d = new ArrayDeque();
+        d.addLast(0);
+        d.addLast(1);
+        d.addFirst(2);
+        d.addFirst(3);
+        d.addFirst(4);
+        d.size();
+        d.size();
+        d.addFirst(7);
+        d.addLast(8);
+        d.addFirst(9);
+        d.addFirst(10);
     }
 }

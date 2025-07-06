@@ -1,5 +1,3 @@
-import java.util.Comparator;
-
 public class OffByN implements CharacterComparator {
     private final int N;
     public OffByN(int N) {

@@ -1,5 +1,3 @@
-import org.w3c.dom.Node;
-
 public class Palindrome {
     public Deque<Character> wordToDeque(String word) {
         Deque<Character> ans = new ArrayDeque<>();

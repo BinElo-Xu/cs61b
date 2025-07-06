@@ -25,5 +25,5 @@ public class TestOffByOne {
         assertFalse(p.isPalindrome("aa"));
         assertTrue(p.isPalindrome("aab"));
         assertTrue(p.isPalindrome("flake"));
-   }
+    }
 }

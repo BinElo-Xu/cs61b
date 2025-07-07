@@ -14,16 +14,4 @@ public class TestOffByOne {
         assertFalse(offByOne.equalChars('a', 'e'));
         assertFalse(offByOne.equalChars('f', 'd'));
     }
-    @Test
-    public void testisPalindrome() {
-        OffByOne p = new OffByOne();
-        assertFalse(p.isPalindrome("noon"));
-        assertFalse(p.isPalindrome("racecar"));
-        assertTrue(p.isPalindrome(""));
-        assertTrue(p.isPalindrome("a"));
-        assertTrue(p.isPalindrome("ab"));
-        assertFalse(p.isPalindrome("aa"));
-        assertTrue(p.isPalindrome("aab"));
-        assertTrue(p.isPalindrome("flake"));
-    }
 }

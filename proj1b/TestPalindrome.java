@@ -17,14 +17,38 @@ public class TestPalindrome {
     } //Uncomment this class once you've created your Palindrome class.
 
     @Test
-    public void testisPalindrome() {
-        assertFalse(palindrome.isPalindrome("persiflage"));
-        assertTrue(palindrome.isPalindrome("a"));
-        assertTrue(palindrome.isPalindrome("noon"));
-        assertTrue(palindrome.isPalindrome("racecar"));
-        assertTrue(palindrome.isPalindrome(""));
-        assertFalse(palindrome.isPalindrome("aaabbbccc"));
-        assertFalse(palindrome.isPalindrome("ab"));
-        assertTrue(palindrome.isPalindrome("aa"));
+    public void testisPalindromeOffByOne() {
+        //空白单词
+        assertTrue(palindrome.isPalindrome("", new OffByOne()));
+        // 单个字母
+        assertTrue(palindrome.isPalindrome("a", new OffByOne()));
+        // 两个字母
+        assertTrue(palindrome.isPalindrome("ab", new OffByOne()));
+        assertFalse(palindrome.isPalindrome("bb", new OffByOne()));
+        // 多个字母
+        assertTrue(palindrome.isPalindrome("acb", new OffByOne()));
+        assertTrue(palindrome.isPalindrome("egf", new OffByOne()));
+        assertFalse(palindrome.isPalindrome("noon", new OffByOne()));
+        assertTrue(palindrome.isPalindrome("flake", new OffByOne()));
+    }
+
+    @Test
+    public void testisPalindromeOffByN() {
+        // 空白单词
+        assertTrue(palindrome.isPalindrome("", new OffByN(2)));
+        assertTrue(palindrome.isPalindrome("", new OffByN(3)));
+        // 一个字母
+        assertTrue(palindrome.isPalindrome("a", new OffByN(2)));
+        assertTrue(palindrome.isPalindrome("b", new OffByN(3)));
+        // 两个字母
+        assertTrue(palindrome.isPalindrome("ac", new OffByN(2)));
+        assertTrue(palindrome.isPalindrome("ad", new OffByN(3)));
+        assertFalse(palindrome.isPalindrome("ad", new OffByN(2)));
+        assertFalse(palindrome.isPalindrome("ac", new OffByN(3)));
+        // 多个字母
+        assertTrue(palindrome.isPalindrome("abdc", new OffByN(2)));
+        assertTrue(palindrome.isPalindrome("abed", new OffByN(3)));
+        assertFalse(palindrome.isPalindrome("abed", new OffByN(2)));
+        assertFalse(palindrome.isPalindrome("abdc", new OffByN(3)));
     }
 }

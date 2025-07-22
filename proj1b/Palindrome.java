@@ -32,6 +32,6 @@ public class Palindrome {
         if (!cc.equalChars(word.charAt(start), word.charAt(end))) {
             return false;
         }
-        return helpIsPalindrome1(word, cc,start + 1, end - 1);
+        return helpIsPalindrome1(word, cc, start + 1, end - 1);
     }
 }

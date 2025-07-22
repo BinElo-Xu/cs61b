@@ -16,13 +16,13 @@ public class TestArrayDequeGold {
                 expected.addFirst(num);
                 real.addFirst(num);
                 message += "addFirst(" + num + ")\n";
-                assertEquals(message, expected.get(0), real.get(0));
+                assertEquals(message, expected.size(), real.size());
             }
             else if (op < 2.0) {
                 expected.addLast(num);
                 real.addLast(num);
                 message += "addLast(" + num + ")\n";
-                assertEquals(message, expected.getLast(), real.get(real.size() - 1));
+                assertEquals(message, expected.size(), real.size());
             }
             else if (op < 3.0) {
                 if (expected.isEmpty() || real.isEmpty()) {

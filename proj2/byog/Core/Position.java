@@ -16,4 +16,10 @@ public class Position {
     public Position multiply(int scalar) {
         return new Position(this.x * scalar, this.y * scalar);
     }
+
+    public double sub(Position other) {
+        double dx = other.x - this.x;
+        double dy = other.y - this.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 }

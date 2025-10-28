@@ -3,11 +3,13 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
+import java.io.*;
+
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
+    public static final int WIDTH = 81;
+    public static final int HEIGHT = 51;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -31,8 +33,38 @@ public class Game {
         // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
-
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        DungeonGenerator generator = new DungeonGenerator();
+        if (input.charAt(0) == 'N') {
+            Stage stage = new Stage(WIDTH, HEIGHT);
+            int i = 1;
+            String seed = "";
+            while (input.charAt(i) != 'S') {
+                seed += input.charAt(i);
+                i += 1;
+            }
+            long SEED = Long.parseLong(seed);
+            generator.setRandomSeed(SEED);
+            generator.initialize(stage, 30, 3);
+            generator.generate();
+        }
+        else if (input.charAt(0) == 'L') {
+            File latestFile = new File("./latest.txt");
+            try {
+                FileInputStream fileIn = new FileInputStream(latestFile);
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                generator = (DungeonGenerator) in.readObject();
+                in.close();
+                fileIn.close();
+            } catch (Exception e) {
+                if (!latestFile.exists()) {
+                    System.out.println("File not found");
+                }
+                e.printStackTrace();
+            }
+        }
+        else if (input.charAt(0) == 'Q') {
+            System.exit(0);
+        }
+        return generator.stage.world;
     }
 }

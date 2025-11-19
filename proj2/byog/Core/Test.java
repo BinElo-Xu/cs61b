@@ -7,12 +7,12 @@ public class Test {
         DungeonGenerator dg = new DungeonGenerator();
         Stage stage = new Stage(81, 51);
         dg.initialize(stage, 30, 3);
-        dg.generate(12345);
+        dg.generate(123456);
 
         DungeonGenerator dg2 = new DungeonGenerator();
         Stage stage2 = new Stage(81, 51);
         dg2.initialize(stage2, 30, 3);
-        dg2.generate(12345);
+        dg2.generate(123456);
 
         // 直接比较两个世界的tile数据
         boolean worldsAreIdentical = true;

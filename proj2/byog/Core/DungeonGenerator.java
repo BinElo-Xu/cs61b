@@ -216,7 +216,7 @@ public class DungeonGenerator implements Serializable {
             openRegions.removeAll(sources);
             //Remove any connectors that aren't needed anymore.
             connectors.removeIf((pos) -> {
-                if (connector.sub(pos) < 3) {
+                if (connector.sub(pos) < 4) {
                     return true;
                 }
                 Set<Integer> area = connectorRegions.get(pos).stream().map(

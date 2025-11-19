@@ -3,18 +3,20 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
-import java.io.*;
 
 public class Game {
-    TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 81;
     public static final int HEIGHT = 51;
+    public String option = "";
+    public String command = "";
+    public long seed = -1;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
+
     }
 
     /**
@@ -30,41 +32,83 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
+        // Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
         DungeonGenerator generator = new DungeonGenerator();
-        if (input.charAt(0) == 'N') {
-            Stage stage = new Stage(WIDTH, HEIGHT);
-            int i = 1;
-            String seed = "";
-            while (input.charAt(i) != 'S') {
-                seed += input.charAt(i);
-                i += 1;
+        Stage stage = new Stage(WIDTH, HEIGHT);
+        analyzeCommand(input);
+        switch (option) {
+            case "n": {
+                generator.initialize(stage, 20, 3);
+                generator.generate(seed);
+                evalCommand(command);
+                break;
             }
-            long SEED = Long.parseLong(seed);
-            generator.setRandomSeed(SEED);
-            generator.initialize(stage, 30, 3);
-            generator.generate();
-        }
-        else if (input.charAt(0) == 'L') {
-            File latestFile = new File("./latest.txt");
-            try {
-                FileInputStream fileIn = new FileInputStream(latestFile);
-                ObjectInputStream in = new ObjectInputStream(fileIn);
-                generator = (DungeonGenerator) in.readObject();
-                in.close();
-                fileIn.close();
-            } catch (Exception e) {
-                if (!latestFile.exists()) {
-                    System.out.println("File not found");
-                }
-                e.printStackTrace();
+            case "l": {
+                // The logic of load the game.
+                evalCommand(command);
+                break;
             }
-        }
-        else if (input.charAt(0) == 'Q') {
-            System.exit(0);
+            case "q": {
+                break;
+            }
         }
         return generator.stage.world;
+    }
+
+    /**
+     * Evaluate the command based the game rules.
+     * @param command
+     */
+    private void evalCommand(String command) {
+        char[] chars = command.toCharArray();
+        for (char c : chars) {
+            switch (c) {
+                case 'w': {
+
+                }
+                case 's': {
+
+                }
+                case 'a': {
+
+                }
+                case 'd': {
+
+                }
+                case ':':
+                case 'q': {
+
+                }
+            }
+        }
+    }
+
+    /**
+     *Analyze the input str, divide it to "option", "command" and "seed".
+      */
+    private void analyzeCommand(String input) {
+        String inputStr = input.toLowerCase();
+        option = String.valueOf(inputStr.charAt(0));
+        if (option.equals("n")) {
+            String seedStr = "";
+            int index = 1;
+            while (isNum(inputStr.charAt(index))) {
+                seedStr += inputStr.charAt(index);
+                index += 1;
+            }
+            seed = Long.parseLong(seedStr);
+            for (; index < inputStr.length(); index += 1) {
+                command += inputStr.charAt(index);
+            }
+        } else if (option.equals("l")) {
+            for (int i = 1; i < inputStr.length(); i += 1) {
+                command += inputStr.charAt(i);
+            }
+        }
+    }
+    private boolean isNum(char c) {
+        return c >= '0' && c <= '9';
     }
 }

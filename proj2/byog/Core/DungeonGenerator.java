@@ -1,6 +1,5 @@
 package byog.Core;
 
-import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
@@ -14,19 +13,17 @@ import java.util.stream.Collectors;
 
 public class DungeonGenerator implements Serializable {
     // The stage of Dungeon.
-    public Stage stage;
+    Stage stage;
     // The number of attempt to generate room.
     private int numberRoomTries = 30;
     // The max size of one room, must be set to less than stage size.
     private int roomMaxSize = 3;
     // Rooms that in the dungeon.
-    private List<Room> rooms = new ArrayList<Room>();
+    private List<Room> rooms;
     // The index of connection region to which a position belongs.
     private int[][] region;
     // Index of current region being carved(雕刻).
-    private int currentRegion = -1;
-    //Random seed
-    private static long RANDOM_SEED = 123456;
+    private int currentRegion;
     private Random random;
     //The percentage of change direction.
     private static final int WINDING_PERCENT = 50;
@@ -42,7 +39,10 @@ public class DungeonGenerator implements Serializable {
     /**
      * Generate the Dungeon.
      */
-    public void generate() {
+    public void generate(long seed) {
+        rooms = new ArrayList<>();
+        currentRegion = -1;
+        random = new Random(seed);
         if (stage.height % 2 == 0 || stage.width % 2 == 0) {
             throw new IllegalArgumentException("Stage must be odd-size");
         }
@@ -68,8 +68,8 @@ public class DungeonGenerator implements Serializable {
      * Set the RANDOM_SEED.
      */
     public void setRandomSeed(long seed) {
-        RANDOM_SEED = seed;
-        random = new Random(RANDOM_SEED);
+        //Random seed
+        random = new Random(seed);
     }
 
     /**
@@ -177,7 +177,10 @@ public class DungeonGenerator implements Serializable {
                 connectorRegions.put(pos, regions);
             }
         }
+        // Hash map can not ensure the sorts of one list, so we need to sort it again to
+        // ensure the sorts of list.
         List<Position> connectors = new ArrayList<>(connectorRegions.keySet());
+        connectors.sort(Comparator.comparingInt((Position p) -> p.x).thenComparingInt(p -> p.y));
 
         /*
         Keep track of which region has been merged. This maps an original region index
@@ -216,7 +219,8 @@ public class DungeonGenerator implements Serializable {
                 if (connector.sub(pos) < 3) {
                     return true;
                 }
-                Set<Integer> area = connectorRegions.get(pos).stream().map(merged::get).collect(Collectors.toSet());
+                Set<Integer> area = connectorRegions.get(pos).stream().map(
+                        merged::get).collect(Collectors.toSet());
                 if (area.size() > 1) {
                     return false;
                 }

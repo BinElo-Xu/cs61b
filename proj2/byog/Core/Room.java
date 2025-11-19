@@ -1,10 +1,10 @@
 package byog.Core;
 
 public class Room{
-    public int x;
-    public int y;
-    public int width;
-    public int height;
+    int x;
+    int y;
+    int width;
+    int height;
     public Room(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;

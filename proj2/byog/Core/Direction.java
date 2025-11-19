@@ -10,7 +10,7 @@ public enum Direction {
     East(new Position(1, 0)),
     West(new Position(-1, 0));
 
-    public final Position position;
+    final Position position;
     Direction(Position position) {
         this.position = position;
     }

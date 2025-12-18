@@ -28,7 +28,7 @@ public class DungeonGenerator implements Serializable {
     //The percentage of change direction.
     private static final int WINDING_PERCENT = 50;
     //The chance of extra connection to connect room and road.
-    private static final int EXTRA_CONNECT_CHANCE = 20;
+    private static final int EXTRA_CONNECT_CHANCE = 5;
 
     public void initialize(Stage stage, int numberRoomTries, int roomMaxSize) {
         this.stage = stage;
@@ -216,7 +216,7 @@ public class DungeonGenerator implements Serializable {
             openRegions.removeAll(sources);
             //Remove any connectors that aren't needed anymore.
             connectors.removeIf((pos) -> {
-                if (connector.sub(pos) < 4) {
+                if (connector.sub(pos) < 2) {
                     return true;
                 }
                 Set<Integer> area = connectorRegions.get(pos).stream().map(

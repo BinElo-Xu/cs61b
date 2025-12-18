@@ -8,9 +8,9 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 81;
     public static final int HEIGHT = 51;
-    public String option = "";
-    public String command = "";
-    public long seed = -1;
+    private String option = "";
+    private String command = "";
+    private long seed = -1;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -53,13 +53,15 @@ public class Game {
             case "q": {
                 break;
             }
+            default: { }
         }
         return generator.stage.world;
     }
 
+
     /**
      * Evaluate the command based the game rules.
-     * @param command
+     * @param command:The command user input.
      */
     private void evalCommand(String command) {
         char[] chars = command.toCharArray();

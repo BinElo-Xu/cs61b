@@ -1,6 +1,6 @@
 package byog.Core;
 
-public class Room{
+public class Room {
     int x;
     int y;
     int width;

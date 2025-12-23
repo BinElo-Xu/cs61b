@@ -4,8 +4,8 @@ import byog.TileEngine.TETile;
 
 public class Stage {
     TETile[][] world;
-    public int width;
-    public int height;
+    int width;
+    int height;
     public Stage(int width, int height) {
         this.world = new TETile[width][height];
         this.width = width;

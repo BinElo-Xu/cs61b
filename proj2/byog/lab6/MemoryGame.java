@@ -23,13 +23,12 @@ public class MemoryGame {
             System.out.println("Please enter a seed");
             return;
         }
-
         int seed = Integer.parseInt(args[0]);
-        MemoryGame game = new MemoryGame(40, 40);
+        MemoryGame game = new MemoryGame(40, 40, seed);
         game.startGame();
     }
 
-    public MemoryGame(int width, int height) {
+    public MemoryGame(int width, int height, int seed) {
         /* Sets up StdDraw so that it has a width by height grid of 16 by 16 squares as its canvas
          * Also sets up the scale so the top left is (0,0) and the bottom right is (width, height)
          */
@@ -43,32 +42,93 @@ public class MemoryGame {
         StdDraw.clear(Color.BLACK);
         StdDraw.enableDoubleBuffering();
 
-        //TODO: Initialize random number generator
+        this.rand = new Random(seed);
+    }
+
+    // This constructor just for test.
+    public MemoryGame(int seed) {
+        this.rand = new Random(seed);
     }
 
     public String generateRandomString(int n) {
-        //TODO: Generate random string of letters of length n
-        return null;
+        int index = 0;
+        String ans = "";
+        for (int i = 0; i < n; i += 1) {
+            index = rand.nextInt(CHARACTERS.length);
+            ans += CHARACTERS[index];
+        }
+        return ans;
     }
 
     public void drawFrame(String s) {
-        //TODO: Take the string and display it in the center of the screen
-        //TODO: If game is not over, display relevant game information at the top of the screen
+        int midWidth = this.width / 2;
+        int midHeight = this.height / 2;
+        StdDraw.clear();
+        StdDraw.clear(Color.BLACK);
+        if (!gameOver) {
+            Font font2 = new Font("Monaco", Font.BOLD, 20);
+            StdDraw.setFont(font2);
+            StdDraw.textLeft(1, height - 1, "Round: " + this.round);
+            StdDraw.text(midWidth, height - 1, playerTurn ? "Type!" : "Watch!");
+            StdDraw.textRight(width - 1, height - 1, ENCOURAGEMENT[round % ENCOURAGEMENT.length]);
+            StdDraw.line(0, height - 2, width, height - 2);
+        }
+        Font font = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(font);
+        StdDraw.setPenColor(Color.white);
+        StdDraw.setXscale(0, this.width);
+        StdDraw.setYscale(0, this.height);
+        StdDraw.text(midWidth, midHeight, s);
+
+        StdDraw.show();
     }
 
     public void flashSequence(String letters) {
-        //TODO: Display each character in letters, making sure to blank the screen between letters
+        int index = 0;
+        while (index < letters.length()) {
+            drawFrame(letters.substring(index, index + 1));
+            StdDraw.pause(750);
+            drawFrame("");
+            StdDraw.pause(750);
+            index += 1;
+        }
     }
 
     public String solicitNCharsInput(int n) {
-        //TODO: Read n letters of player input
-        return null;
+        String input = "";
+        drawFrame(input);
+        while (input.length() < n) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char character = StdDraw.nextKeyTyped();
+            input += String.valueOf(character);
+            drawFrame(input);
+        }
+        StdDraw.pause(750);
+        return input;
     }
 
     public void startGame() {
-        //TODO: Set any relevant variables before the game starts
-
-        //TODO: Establish Game loop
+        round = 1;
+        gameOver = false;
+        playerTurn = false;
+        while (!gameOver) {
+            playerTurn = false;
+            drawFrame("round" + round + " Good Luck!");
+            StdDraw.pause(1500);
+            String ans = generateRandomString(round);
+            flashSequence(ans);
+            playerTurn = true;
+            String input = solicitNCharsInput(round);
+            if (!input.equals(ans)) {
+                gameOver = true;
+                drawFrame("Game Over! You made it to round:" + round);
+            } else {
+                round += 1;
+                drawFrame("Correct, well done!");
+            }
+        }
     }
 
 }

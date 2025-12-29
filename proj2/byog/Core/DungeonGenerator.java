@@ -43,7 +43,8 @@ public class DungeonGenerator implements Serializable {
     //The chance of extra connection to connect room and road.
     private static final int EXTRA_CONNECT_CHANCE = 3;
 
-    public DungeonGenerator(int numberRoomTries, int roomMaxSize, Random random, int width, int height) {
+    public DungeonGenerator(int numberRoomTries, int roomMaxSize,
+                            Random random, int width, int height) {
         this.numberRoomTries = numberRoomTries;
         this.roomMaxSize = roomMaxSize;
         this.random = random;
@@ -100,16 +101,7 @@ public class DungeonGenerator implements Serializable {
         if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height) {
             return "Nothing is here";
         }
-        TETile tile = getTile(pos);
-        if (tile == Tileset.WALL) {
-            return "Wall";
-        } else if (tile == Tileset.UNLOCKED_DOOR) {
-            return "Unlocked door";
-        } else if (tile == Tileset.PLAYER) {
-           return "Player";
-        } else {
-           return "Floor";
-        }
+        return world[pos.x][pos.y].description();
     }
 
     /**

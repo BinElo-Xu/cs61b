@@ -54,9 +54,11 @@ public class Test {
     public void testSaveGame() {
         Game g1 = new Game();
         Game g2 = new Game();
-        TETile[][] w1 = g1.playWithInputString("N123SWWSDAAS:Q");
-        TETile[][] w2 = g2.playWithInputString("LWDDAWSS");
-        Assert.assertEquals(w1, w2);
+        Game g3 = new Game();
+        TETile[][] w1 = g1.playWithInputString("N123SDDDWWWDDD");
+        TETile[][] w2 = g2.playWithInputString("N123SDDD:Q");
+        TETile[][] w3 = g3.playWithInputString("LWWWDDD");
+        Assert.assertEquals(w1, w3);
     }
 
     private String generateString(Random random) {

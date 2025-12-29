@@ -53,12 +53,19 @@ public class Test {
     @org.junit.Test
     public void testSaveGame() {
         Game g1 = new Game();
-        Game g2 = new Game();
-        Game g3 = new Game();
         TETile[][] w1 = g1.playWithInputString("N123SDDDWWWDDD");
-        TETile[][] w2 = g2.playWithInputString("N123SDDD:Q");
-        TETile[][] w3 = g3.playWithInputString("LWWWDDD");
+        g1.playWithInputString("N123SDDD:Q");
+        TETile[][] w2 = g1.playWithInputString("LWWWDDD");
+        Assert.assertEquals(w1, w2);
+        g1.playWithInputString("N123SDDD:Q");
+        g1.playWithInputString("LWWW:Q");
+        TETile[][] w3 = g1.playWithInputString("LDDD:Q");
         Assert.assertEquals(w1, w3);
+        g1.playWithInputString("N123SDDD:Q");
+        g1.playWithInputString("L:Q");
+        g1.playWithInputString("L:Q");
+        TETile[][] w4 = g1.playWithInputString("LWWWDDD");
+        Assert.assertEquals(w1, w4);
     }
 
     private String generateString(Random random) {

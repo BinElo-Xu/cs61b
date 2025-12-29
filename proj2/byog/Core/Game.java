@@ -50,7 +50,7 @@ public class Game {
 
     //Load the game from a .txt file.
     private void load() {
-        File f = new File("./world.ser");
+        File f = new File("./world.txt");
         if (f.exists()) {
             try {
                 FileInputStream fs = new FileInputStream(f);
@@ -192,7 +192,7 @@ public class Game {
 
     //Save the game.
     private void saveGame(DungeonGenerator generator) {
-        File f = new File("./world.ser");
+        File f = new File("./world.txt");
         try {
             if (!f.exists()) {
                 f.createNewFile();

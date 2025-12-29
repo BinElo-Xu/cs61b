@@ -15,50 +15,70 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
- * Copy from "https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/"
+ * https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
  */
 
 public class DungeonGenerator implements Serializable {
-    // The stage of Dungeon.
-    Stage stage;
+    // The world of Dungeon.
+    TETile[][] world;
+    private int width;
+    private int height;
     // The number of attempt to generate room.
     private int numberRoomTries = 30;
     // The max size of one room, must be set to less than stage size.
     private int roomMaxSize = 3;
     // Rooms that in the dungeon.
     private List<Room> rooms;
+    private Set<Room> deadRooms;
     // The index of connection region to which a position belongs.
     private int[][] region;
     // Index of current region being carved(雕刻).
     private int currentRegion;
     private Random random;
+    // Position where the player born.
+    Position playerBorn;
+    private Player player;
     //The percentage of change direction.
     private static final int WINDING_PERCENT = 50;
     //The chance of extra connection to connect room and road.
-    private static final int EXTRA_CONNECT_CHANCE = 5;
+    private static final int EXTRA_CONNECT_CHANCE = 3;
 
-    public void initialize(Stage stage, int numberRoomTries, int roomMaxSize) {
-        this.stage = stage;
+    public DungeonGenerator(int numberRoomTries, int roomMaxSize, Random random, int width, int height) {
         this.numberRoomTries = numberRoomTries;
         this.roomMaxSize = roomMaxSize;
+        this.random = random;
+        this.width = width;
+        this.height = height;
+        world = new TETile[width][height];
+        generate();
+        player = new Player(world, playerBorn);
+    }
+
+    // Move the player in the map.
+    public void movePlayer(Toward toward) {
+        player.move(world, toward);
+    }
+
+    //Return if player win.
+    public boolean playerWin() {
+        return player.playerWin;
     }
 
     /**
      * Generate the Dungeon.
      */
-    public void generate(long seed) {
+    private void generate() {
         rooms = new ArrayList<>();
         currentRegion = -1;
-        random = new Random(seed);
-        if (stage.height % 2 == 0 || stage.width % 2 == 0) {
+        if (height % 2 == 0 || width % 2 == 0) {
             throw new IllegalArgumentException("Stage must be odd-size");
         }
         fillWithWall();
-        region = new int[stage.width][stage.height];
+        region = new int[width][height];
         addRoom();
         //finish the grow maze method using growing tree algorithm.
-        for (int k = 1; k < stage.width; k += 2) {
-            for (int l = 1; l < stage.height; l += 2) {
+        for (int k = 1; k < width; k += 2) {
+            for (int l = 1; l < height; l += 2) {
                 Position pos = new Position(k, l);
                 if (getTile(pos) != Tileset.WALL) {
                     continue;
@@ -68,15 +88,28 @@ public class DungeonGenerator implements Serializable {
         }
         connectRegions();
         removeDeadEnds();
+        for (Room room : rooms) {
+            removeDeadRooms(room);
+        }
+        rooms.removeAll(deadRooms);
         addWayOut();
     }
 
-    /**
-     * Set the RANDOM_SEED.
-     */
-    public void setRandomSeed(long seed) {
-        //Random seed
-        random = new Random(seed);
+    // Return the description of position (x, y).
+    public String descriptionPos(Position pos) {
+        if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height) {
+            return "Nothing is here";
+        }
+        TETile tile = getTile(pos);
+        if (tile == Tileset.WALL) {
+            return "Wall";
+        } else if (tile == Tileset.UNLOCKED_DOOR) {
+            return "Unlocked door";
+        } else if (tile == Tileset.PLAYER) {
+           return "Player";
+        } else {
+           return "Floor";
+        }
     }
 
     /**
@@ -87,16 +120,16 @@ public class DungeonGenerator implements Serializable {
             int size = RandomUtils.uniform(random, 1, 3 + roomMaxSize) * 2 + 1;
             // Let the room not just square.
             int rectangularity = RandomUtils.uniform(random, 0, 1 + size / 2) * 2;
-            int width = size;
-            int height = size;
+            int roomWidth = size;
+            int roomHeight = size;
             if (RandomUtils.bernoulli(random)) {
-                width += rectangularity;
+                roomWidth += rectangularity;
             } else {
-                height += rectangularity;
+                roomHeight += rectangularity;
             }
-            int x = RandomUtils.uniform(random,  (stage.width - width) / 2) * 2 + 1;
-            int y = RandomUtils.uniform(random, (stage.height - height) / 2) * 2 + 1;
-            Room room = new Room(x, y, width, height);
+            int x = RandomUtils.uniform(random,  (this.width - roomWidth) / 2) * 2 + 1;
+            int y = RandomUtils.uniform(random, (this.height - roomHeight) / 2) * 2 + 1;
+            Room room = new Room(x, y, roomWidth, roomHeight);
             boolean overlaps = false;
             for (Room other : rooms) {
                 if (room.isOverlapsTo(other)) {
@@ -164,8 +197,8 @@ public class DungeonGenerator implements Serializable {
      */
     private void connectRegions() {
         Map<Position, Set<Integer>> connectorRegions = new HashMap<>();
-        for (int i = 1; i < stage.width - 1; i += 1) {
-            for (int j = 1; j < stage.height - 1; j += 1) {
+        for (int i = 1; i < this.width - 1; i += 1) {
+            for (int j = 1; j < this.height - 1; j += 1) {
                 Position pos = new Position(i, j);
                 if (getTile(pos) != Tileset.WALL) {
                     continue;
@@ -248,8 +281,8 @@ public class DungeonGenerator implements Serializable {
 
         while (!done) {
             done = true;
-            for (int i = 1; i < stage.width - 1; i += 1) {
-                for (int j = 1; j < stage.height - 1; j += 1) {
+            for (int i = 1; i < this.width - 1; i += 1) {
+                for (int j = 1; j < this.height - 1; j += 1) {
                     Position pos = new Position(i, j);
                     if (getTile(pos) == Tileset.WALL) {
                         continue;
@@ -272,22 +305,49 @@ public class DungeonGenerator implements Serializable {
 
     }
 
+
+    /**
+     * Remove the closed rooms.
+     * @param room: The room which need to check.
+     */
+    private void removeDeadRooms(Room room) {
+        deadRooms = new HashSet<>();
+        boolean isDeadRoom = true;
+        int x = room.x - 1;
+        int y = room.y - 1;
+        for (int i = x; i <= x + room.width + 1; i += 1) {
+            if (world[i][y] == Tileset.FLOOR || world[i][y + room.height + 1] == Tileset.FLOOR) {
+                isDeadRoom = false;
+            }
+        }
+        for (int j = y; j <= y + room.height + 1; j += 1) {
+            if (world[x][j] == Tileset.FLOOR || world[x + room.width + 1][j] == Tileset.FLOOR) {
+                isDeadRoom = false;
+            }
+        }
+        if (isDeadRoom) {
+            for (int i = room.x; i < room.x + room.width; i += 1) {
+                for (int j = room.y; j <= room.y + room.height; j += 1) {
+                    world[i][j] = Tileset.WALL;
+                    deadRooms.add(room);
+                }
+            }
+        }
+    }
+
     /**
      * Add the way out.
      */
     private void addWayOut() {
-        boolean flag = false;
-        while (!flag) {
-            flag = true;
-            int x = random.nextInt(stage.width);
-            int y = random.nextInt(stage.height);
-            Position pos = new Position(x, y);
-            if (getTile(pos) == Tileset.WALL) {
-                flag = false;
-                continue;
-            }
-            setTile(pos, Tileset.LOCKED_DOOR);
-        }
+        int index = random.nextInt(rooms.size());
+        int indexPlayer = random.nextInt(rooms.size());
+        Room outRoom = rooms.get(index);
+        Room playerRoom = rooms.get(indexPlayer);
+        Position pos = new Position(RandomUtils.uniform(random, outRoom.x, outRoom.x + outRoom.width),
+                RandomUtils.uniform(random, outRoom.y, outRoom.y + outRoom.height));
+        playerBorn = new Position(RandomUtils.uniform(random, playerRoom.x, playerRoom.x + playerRoom.width),
+                RandomUtils.uniform(random, playerRoom.y, playerRoom.y + playerRoom.height));
+        setTile(pos, Tileset.UNLOCKED_DOOR);
     }
 
     /**
@@ -301,9 +361,9 @@ public class DungeonGenerator implements Serializable {
      * Fill all the world with wall.
      */
     public void fillWithWall() {
-        for (int x = 0; x < stage.width; x++) {
-            for (int y = 0; y < stage.height; y++) {
-                stage.world[x][y] = Tileset.WALL;
+        for (int x = 0; x < this.width; x++) {
+            for (int y = 0; y < this.height; y++) {
+                this.world[x][y] = Tileset.WALL;
             }
         }
     }
@@ -324,13 +384,22 @@ public class DungeonGenerator implements Serializable {
     }
 
     /**
+     * Check if the position pos beyond world.
+     * @param pos: The position where need to check.
+     * @return If the pos beyond world.
+     */
+    private boolean worldContain(Position pos) {
+        return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height;
+    }
+
+    /**
      * Gets weather or not an opening can be carved from the given starting
      * [cells] at [pos] to the adjacent cell facing [direction]. Return 'ture'
      * if the starting cell is in bounds and the destination cell is filled.
      */
     private boolean canCarve(Position pos, Direction dir) {
         //Finish the logic of 'canCarve' function, and figure out its principle(原理).
-        if (!stage.contain(pos.add(dir.position.multiply(3)))) {
+        if (!worldContain(pos.add(dir.position.multiply(3)))) {
             return false;
         }
         return getTile(pos.add(dir.position.multiply(2))) == Tileset.WALL;
@@ -340,12 +409,12 @@ public class DungeonGenerator implements Serializable {
      * Get the tile from position pos.
      */
     private TETile getTile(Position pos) {
-        return stage.world[pos.x][pos.y];
+        return this.world[pos.x][pos.y];
     }
     /**
      * Set the tile of position pos.
      */
     private void setTile(Position pos, TETile tile) {
-        stage.world[pos.x][pos.y] = tile;
+        this.world[pos.x][pos.y] = tile;
     }
 }

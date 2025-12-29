@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Arrays;
 
 public enum Direction {
-    North(new Position(0, -1)),
-    South(new Position(0, 1)),
+    North(new Position(0, 1)),
+    South(new Position(0, -1)),
     East(new Position(1, 0)),
     West(new Position(-1, 0));
 

@@ -1,6 +1,8 @@
 package byog.Core;
 
-public class Room {
+import java.io.Serializable;
+
+public class Room implements Serializable {
     int x;
     int y;
     int width;
